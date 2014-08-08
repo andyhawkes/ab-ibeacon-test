@@ -122,27 +122,34 @@ function reportClick(e) {
 }
 
 function updateInformation(event){
-    if (event.identifier === "bike"){
-        $.mintProximity.text = event.proximity;
-        $.mintRSSI.text = event.rssi;
-        if (event.proximity === 'near'){
-            $.adspace.image = 'http://image.shutterstock.com/display_pic_with_logo/430459/105011834/stock-photo-mojito-lime-drink-cocktail-105011834.jpg';
-        }
-
-    } else if (event.identifier === "kinekt"){
-        $.blueberryProximity.text = event.proximity;
-        $.blueberryRSSI.text = event.rssi;
-        if (event.proximity === 'near'){
-            $.adspace.image = 'http://image.shutterstock.com/display_pic_with_logo/965987/108450557/stock-photo-freshly-picked-blueberries-108450557.jpg';
-        }
-
-    } else if (event.identifier === "booth"){
-        $.marshmellowProximity.text = event.proximity;
-        $.marshmellowRSSI.text = event.rssi;
-        if (event.proximity === 'near'){
-            $.adspace.image = 'http://image.shutterstock.com/display_pic_with_logo/963767/142706050/stock-photo-marshmallows-142706050.jpg';
-        }
-    }
+	var beaconIdentifier = event.identifier;
+    for ( var x in $['beaconWrapper'].children ) {
+        if ($['beaconWrapper'].children[x].id == beaconIdentifier) {
+            $['beaconWrapper'].children[x].children[1].text = event.proximity;
+			$['beaconWrapper'].children[x].children[2].text = event.rssi;
+		}
+	}
 }
+
+function buildUI(){
+	var views = [];
+	for (var i = 0; i < projects.length; i++) {
+		var beaconIdentifier = projects[i].beacon.identifier;
+	    views[beaconIdentifier] = $.UI.create('View', {classes: 'beaconBlock', id: beaconIdentifier});
+
+		var deviceTitle = $.UI.create('Label', {classes: 'beaconName', text: projects[i].title, id: beaconIdentifier+'Title'});
+	    views[beaconIdentifier].add(deviceTitle);
+
+		var deviceProximity = $.UI.create('Label', {classes: 'beaconProximity', text: 'Proximity', id: beaconIdentifier+'Proximity' });
+	    views[beaconIdentifier].add(deviceProximity);
+
+		var deviceRSSI = $.UI.create('Label', {classes: 'beaconRSSI', text: 'RSSI', id: beaconIdentifier+'RSSI' });
+	    views[beaconIdentifier].add(deviceRSSI);
+		
+		$.beaconWrapper.add(views[beaconIdentifier]);
+	}
+}
+
+buildUI();
 
 $.win.open();
